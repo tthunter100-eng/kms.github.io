@@ -1,30 +1,69 @@
 //search button
 const searchButton = document.createElement("button");
-searchButton.innerText="🔍";
+const searchIcon = document.createElement("img");
+searchIcon.src = "SearchIco.png";
+searchIcon.style.width = "30px";      
+searchIcon.style.height = "30px";
+
+
+searchButton.appendChild(searchIcon);
+
+
 Object.assign(searchButton.style, {
     padding:"8px 20px",
     color:"#000000",
-    backgroundColor:"#828282",
     cursor:"pointer",
     borderWidth:"2px",
     borderStyle:"solid",
     fontSize:"15px",
     fontWeight:"normal",
-    display:"flex",
-    alignContent:"center",
-    textAlign:"center",
     position:"absolute",
-    top:"-45px",
-    left:"10px",
+    top:"-60px",
+    left:"5px",
     margin:"0",
     borderRadius:"8px",
     boxShadow:"0 4px 8px rgba(0, 0, 0, 0.1)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center"
 });
 document.querySelector(".item-list-container").appendChild(searchButton);
 
 
+//search buton pop-up
+const searchContainer = document.createElement("div");
+searchContainer.innerHTML = `
+    <select id="search-category" style="padding: 6px; border-radius: 8px; border: 1px solid #ccc; cursor: pointer; font-size: 13px;">
+        <option value="All">All Categories</option>
+        <option value="Electronics">Electronics</option>
+        <option value="Clothing">Clothing</option>
+        <option value="School Supplies">School Supplies</option>
+        <option value="Wallet">Wallet</option>
+        <option value="ID">ID</option>
+        <option value="Other">Other</option>
+    </select>
+    <div style="position: relative; display: flex; align-items: center;">
+        <input type="text" id="search-input" placeholder="Filter list..." style="padding: 6px 30px 6px 10px; border-radius: 8px; border: 1px solid #ccc; width: 140px; font-size: 13px;">
+        <button id="clear-search" style="position: absolute; right: 8px; background: none; border: none; cursor: pointer; color: #888; font-weight: bold; display: none;">✕</button>
+    </div>
+`;
 
 
+Object.assign(searchContainer.style, {
+    position: "absolute",
+    top: "-50px",
+    left: "85px",
+    display: "none",
+    gap: "8px",
+    alignItems: "center",
+    backgroundColor: "#ffffff",
+    padding: "5px 10px",
+    borderRadius: "10px",
+    boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+    zIndex: "1000",
+    border: "1px solid #ddd"
+});
+document.querySelector(".item-list-container").appendChild(searchContainer);
 
 
 //edit button
@@ -52,8 +91,6 @@ Object.assign(editButton.style, {
 document.querySelector(".item-list-container").appendChild(editButton);
 
 
-
-
 //button
 const lostButton = document.createElement("button");
 lostButton.innerText="+";
@@ -79,13 +116,63 @@ Object.assign(lostButton.style, {
 document.querySelector(".item-list").appendChild(lostButton);
 
 
+//search button logic
+let isSearchOpen = false;
+const searchInput = searchContainer.querySelector("#search-input");
+const categorySelect = searchContainer.querySelector("#search-category");
+const clearBtn = searchContainer.querySelector("#clear-search");
+
+
+const filterAndHighlight = () => {
+    const category = categorySelect.value;
+    const query = searchInput.value.toLowerCase();
+    const items = document.querySelectorAll(".item-list li");
+   
+    clearBtn.style.display = query.length > 0 ? "block" : "none";
+
+
+    items.forEach(item => {
+        if (!item.dataset.original) item.dataset.original = item.innerHTML;
+       
+        const rawText = item.innerText.toLowerCase();
+        const matchesCategory = category === "All" || rawText.includes(category.toLowerCase());
+        const matchesQuery = rawText.includes(query);
+
+
+        if (matchesCategory && matchesQuery) {
+            item.style.display = "block";
+            if (query !== "") {
+                const regex = new RegExp(`(${query})`, "gi");
+                item.innerHTML = item.dataset.original.replace(regex, `<mark style="background-color: #3be8ff; padding: 0 2px; border-radius: 2px;">$1</mark>`);
+            } else {
+                item.innerHTML = item.dataset.original;
+            }
+        } else {
+            item.style.display = "none";
+        }
+    });
+};
+
+
+searchButton.onclick = () => {
+    isSearchOpen = !isSearchOpen;
+    searchContainer.style.display = isSearchOpen ? "flex" : "none";
+};
+
+
+searchInput.oninput = filterAndHighlight;
+categorySelect.onchange = filterAndHighlight;
+clearBtn.onclick = () => {
+    searchInput.value = "";
+    filterAndHighlight();
+    searchInput.focus();
+};
+
+
 //for edit button
 let isEditing=false;
-
-
 editButton.onclick = () => {
     isEditing=!isEditing;
-   
     if (isEditing) {
         editButton.innerText="Done";
         editButton.style.backgroundColor="#acfc79";
@@ -105,7 +192,7 @@ editButton.onclick = () => {
 //popup
 const popupLost = document.createElement("div");
 popupLost.innerHTML = `
-<div style="position: fixed; border-radius: 8px; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; height: 70%; background-color: white; display: flex; justify-content; center; align-items: center; z-index: 2000;">
+<div style="position: fixed; border-radius: 8px; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; height: 70%; background-color: white; display: flex; justify-content: center; align-items: center; z-index: 2000;">
     <form action="placeholder.php" method="get" id="lost-query">
         <label for="itemname">Item Description</label><br>
         <input type="text" id="item-name" name="itemname" required><br><br>
@@ -141,7 +228,6 @@ Object.assign(popupLost.style, {
 });
 
 
-//show popup
 document.body.appendChild(popupLost);
 lostButton.onclick = () =>  {
     popupLost.style.display = "flex";
@@ -151,6 +237,8 @@ popupLost.querySelector("#close-lost").onclick = () => {
     popupLost.style.display = "none";
     document.body.style.overflow = "auto";
 };
+
+
 popupLost.querySelector("#submit-lost").onclick = event => {
     event.preventDefault();
 
@@ -158,21 +246,15 @@ popupLost.querySelector("#submit-lost").onclick = event => {
     const descInput = document.getElementById("item-name");
     const dateInput = document.getElementById("item-date");
     const typeInput = document.getElementById("item-type");
-    if (!descInput.checkValidity()) {
-        descInput.reportValidity();
-        return;
-    }
-    if (!dateInput.checkValidity()) {
-        dateInput.reportValidity();
-        return;
-    }
-    if (!typeInput.checkValidity()) {
-        typeInput.reportValidity();
+   
+    if (!descInput.checkValidity() || !dateInput.checkValidity() || !typeInput.checkValidity()) {
+        descInput.reportValidity() || dateInput.reportValidity() || typeInput.reportValidity();
         return;
     }
 
 
     const newItem = document.createElement("li");
+    newItem.style.padding = "5px 0";
     newItem.innerHTML = `<strong>${descInput.value}</strong> - <small>${dateInput.value}, ${typeInput.value}</small>`;
 
 
@@ -184,6 +266,10 @@ popupLost.querySelector("#submit-lost").onclick = event => {
     popupLost.style.display = "none";
     document.body.style.overflow = "auto";
 }
+
+
+
+
 
 
 //three bar dropdown
@@ -205,6 +291,12 @@ Object.assign(dropdown.style, {
 document.querySelector(".header").appendChild(dropdown);
 
 
+
+
+
+
+
+
 //dropdown popup
 const dropdownPopup = document.createElement("div");
 dropdownPopup.innerHTML = `
@@ -219,6 +311,12 @@ dropdownPopup.innerHTML = `
         <button class="login-btn" id="login-button">Log In</button>
     </div>
 </div>`;
+
+
+
+
+
+
 
 
 Object.assign(dropdownPopup.style, {
@@ -236,11 +334,23 @@ Object.assign(dropdownPopup.style, {
 document.querySelector(".header").appendChild(dropdownPopup);
 
 
+
+
+
+
+
+
 let isDown = false;
 dropdown.onclick = event => {
     isDown=!isDown;
     dropdownPopup.style.display=isDown ? "flex" : "none";
 };
+
+
+
+
+
+
 
 
 window.addEventListener('click', event => {
@@ -251,12 +361,24 @@ window.addEventListener('click', event => {
 });
 
 
+
+
+
+
+
+
 window.addEventListener('keydown', event => {
     if (event.key === "Enter") {
         if (popupLost.style.display === "flex") {
             const descInput = document.getElementById("item-name");
             const dateInput = document.getElementById("item-date");
             const submitBtn = document.getElementById("submit-lost");
+
+
+
+
+
+
 
 
             if (document.activeElement === descInput) {
@@ -273,8 +395,20 @@ window.addEventListener('keydown', event => {
         }
 
 
+
+
+
+
+
+
         if (loginPage.style.display === "flex") {
             const login = document.getElementById("submit-login");
+
+
+
+
+
+
 
 
             if (document.activeElement === adminUser) {
@@ -290,8 +424,14 @@ window.addEventListener('keydown', event => {
             }
         }
 
+
+
+
         if (ticketPage.style.display === "flex") {
             const ticket = document.getElementById("submit-ticket");
+
+
+
 
             if (document.activeElement === ItemName) {
                 event.preventDefault();
@@ -313,6 +453,12 @@ window.addEventListener('keydown', event => {
 });
 
 
+
+
+
+
+
+
 window.addEventListener('keydown', event => {
     if (event.key === "Escape") {
         if (popupLost.style.display === "flex") {
@@ -321,11 +467,23 @@ window.addEventListener('keydown', event => {
         }
 
 
+
+
+
+
+
+
         if (loginPage.style.display === "flex") {
             loginPage.style.display = "none";
             document.body.style.overflow = "auto";
             document.getElementById("login-query").reset();
         }
+
+
+
+
+
+
 
 
         if (ticketPage.style.display === "flex") {
@@ -336,6 +494,12 @@ window.addEventListener('keydown', event => {
 });
 
 
+
+
+
+
+
+
 //flavor
 const wholeButton = dropdownPopup.querySelectorAll(".header-buttons");
 wholeButton.forEach(container => {
@@ -343,9 +507,21 @@ wholeButton.forEach(container => {
     const icon = container.querySelector(".button-icon");
 
 
+
+
+
+
+
+
     container.onmouseenter = () => {
         if (icon) icon.style.filter = "brightness(0) invert(1) brightness(10)";
         if (icon) icon.style.transition = "filter 0.1s ease";
+
+
+
+
+
+
 
 
         btn.style.backgroundColor = "#0056b3";
@@ -353,14 +529,32 @@ wholeButton.forEach(container => {
     };
 
 
+
+
+
+
+
+
     container.onmouseleave = () => {
         if (icon) icon.style.filter = "none";
+
+
+
+
+
+
 
 
         btn.style.backgroundColor = "#000";
         btn.style.color = "rgb(167, 167, 167)"
     };
 });
+
+
+
+
+
+
 
 
 //for login button
@@ -400,6 +594,12 @@ const adminUser = document.getElementById("admin-username");
 const adminPass = document.getElementById("admin-password");
 
 
+
+
+
+
+
+
 //show login page
 logAdmin.onclick = event => {
     loginPage.style.display = "flex";
@@ -407,11 +607,23 @@ logAdmin.onclick = event => {
 };
 
 
+
+
+
+
+
+
 //close login page
 loginOut.onclick = () => {
     loginPage.style.display = "none";
     document.body.style.overflow = "auto";
 };
+
+
+
+
+
+
 
 
 loginOut.onmouseenter = () => {
@@ -424,8 +636,20 @@ loginOut.onmouseleave = () => {
 };
 
 
+
+
+
+
+
+
 loginPage.querySelector("#submit-login").onclick = event => {
     event.preventDefault();
+
+
+
+
+
+
 
 
     if (!adminUser.checkValidity()) {
@@ -438,6 +662,12 @@ loginPage.querySelector("#submit-login").onclick = event => {
     }
 
 
+
+
+
+
+
+
     document.getElementById("login-query").reset();
     loginPage.style.display = "none";
     document.body.style.overflow = "auto";
@@ -445,59 +675,89 @@ loginPage.querySelector("#submit-login").onclick = event => {
 };
 
 
+
+
+
+
+
+
 //for submit ticket
 const submitTicket = document.getElementById("ticket-button");
 const ticketPage = document.createElement("div");
 ticketPage.innerHTML = `
 <div style="position: fixed; border-radius: 20px; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; height: 70%; display: flex; flex-direction: column; background-color: white; z-index: 2000; overflow: hidden; gap: 15px;">
-    
+   
     <div style="background-color: #0668c0; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; padding: 15px; position: relative;">
         <button id="close-ticket" style="position: absolute; left: 15px; background: none; border: none; cursor: pointer; font-weight: bold; font-size: 24px; color: white;">←</button>
         Want to claim your lost item? Submit a ticket!
     </div>
 
+
+
+
     <div id="ticket-form-container" style="padding: 20px; flex-grow: 1; overflow-y: auto; color: #333; align">
         <form id="ticket-form" style="display: flex; flex-direction: column; gap: 30px;">
-            
+           
         <label style="display: flex; flex-direction: column;">
-                Item Name: 
+                Item Name:
                 <input type="text" id="ItemName" style="margin-top: 5px; background-color: #d9d9d9; border-radius: 20px; border-width: 0px; height: 25px; width: 90%; padding: 3px 10px;" required>
             </label>
-            
+           
             <label style="display: flex; flex-direction: column;">
-                Description: 
+                Description:
                 <textarea id="ItemDesc" style="margin-top: 5px; background-color: #d9d9d9; border-radius: 20px; border-width: 0px; height: 50px; width: 90%; padding: 10px; font-family: sans-serif;" required></textarea>
             </label>
 
+
+
+
             <label style="display: flex; flex-direction: column;">
-                Item Brand (Optional): 
+                Item Brand (Optional):
                 <input type="text" id="ItemBrand" style="margin-top: 5px; background-color: #d9d9d9; border-radius: 20px; border-width: 0px; height: 25px; width: 90%; padding: 3px 10px;">
             </label>
-            
+           
             <label style="display: flex; flex-direction: column;">
-                Last Known Location: 
+                Last Known Location:
                 <input type="text" id="ItemLoc" style="margin-top: 5px; background-color: #d9d9d9; border-radius: 20px; border-width: 0px; height: 25px; width: 90%; padding: 3px 10px;" required>
             </label>
+
+
+
 
             <label style="display: flex; flex-direction: column;">
                 Date Lost:
                 <input type="date" id="ItemDate" style="margin-top: 5px; background-color: #d9d9d9; border-radius: 20px; border-width: 0px; height: 25px; width: 90%; padding: 3px 10px;" required>
 
+
+
+
             </label>
+
+
+
 
             <label style="display: flex; flex-direction: column;">
             Picture of the Item (Optional):
             <input type="file" id="ItemPic" accept="image/*" style="margin-top: 5px; background-color: #d9d9d9; border-radius: 20px; border-width: 0px; height: 25px; width: 90%; padding: 3px 10px;">
             </label>
 
+
+
+
             <label style="display: flex; flex-direction: column; font-weight: bold; font-size: 18px;">
             Personal Information:
             </label>
+
+
+
 
             <label style="display: flex; flex-direction: column;">
             Full Name (Last name, First name MI.):
             <input type="text" id="FullName" style="margin-top: 5px; background-color: #d9d9d9; border-radius: 20px; border-width: 0px; height: 25px; width: 90%; padding: 3px 10px;" required>
             </label>
+
+
+
 
             <label style="display: flex; flex-direction: column;">
             Role in School:
@@ -510,15 +770,24 @@ ticketPage.innerHTML = `
             </select>
             </label>
 
+
+
+
             <label style="display: flex; flex-direction: column;">
             Student Number(if applicable):
             <input type="text" id="StudentNum" style="margin-top: 5px; background-color: #d9d9d9; border-radius: 20px; border-width: 0px; height: 25px; width: 90%; padding: 3px 10px;">
             </label>
 
+
+
+
             <label style="display: flex; flex-direction: column;">
             Contact Number:
             <input type="tel" id="ContactNum" style="margin-top: 5px; background-color: #d9d9d9; border-radius: 20px; border-width: 0px; height: 25px; width: 90%; padding: 3px 10px;" required>
             </label>
+
+
+
 
             <label style="display: flex; flex-direction: column;">
             School ID for Verification:
@@ -527,12 +796,27 @@ ticketPage.innerHTML = `
 
 
 
+
+
+
+
+
+
+
+
+
             <button type="submit" id="submit-ticket" style="background-color: #0668c0; color: white; border-radius: 20px; height: 50px; width: 150px; padding: 3px 10px; align-items: center; justify-content: center; color: white; border-color: #0668c0; cursor: pointer; transition: background 0.2s ease; font-size: 17px;">Submit Ticket</button>
         </form>
     </div>
 
+
+
+
 </div>`;
     ;
+
+
+
 
 Object.assign(ticketPage.style, {
     position: "fixed",
@@ -550,6 +834,12 @@ document.body.appendChild(ticketPage);
 const ticketOut = document.getElementById("close-ticket");
 
 
+
+
+
+
+
+
 //show submit ticket page
 submitTicket.onclick = () => {
     ticketPage.style.display = "flex";
@@ -557,11 +847,23 @@ submitTicket.onclick = () => {
 };
 
 
+
+
+
+
+
+
 //close submit ticket page
 ticketOut.onclick = () => {
     ticketPage.style.display = "none";
     document.body.style.overflow = "auto";
 };
+
+
+
+
+
+
 
 
 ticketOut.onmouseenter = () => {
@@ -572,6 +874,39 @@ ticketOut.onmouseleave = () => {
     ticketOut.innerText = "←";
     ticketOut.style.fontSize = "24px";
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
