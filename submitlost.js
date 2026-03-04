@@ -1,0 +1,479 @@
+//edit button
+const editButton = document.createElement("button");
+editButton.innerText="Edit";
+Object.assign(editButton.style, {
+    padding:"8px 20px",
+    color:"#000000",
+    backgroundColor:"#828282",
+    cursor:"pointer",
+    borderWidth:"2px",
+    borderStyle:"solid",
+    fontSize:"15px",
+    fontWeight:"normal",
+    display:"flex",
+    alignContent:"center",
+    textAlign:"center",
+    position:"absolute",
+    top:"-40px",
+    right:"0px",
+    margin:"0",
+});
+document.querySelector(".item-list-container").appendChild(editButton);
+
+
+//button
+const lostButton = document.createElement("button");
+lostButton.innerText="+";
+Object.assign(lostButton.style, {
+    borderRadius: "8px",
+    padding:"12px 18px",
+    color:"#000000",
+    backgroundColor:"#828282",
+    cursor:"pointer",
+    borderWidth:"2px",
+    borderStyle:"solid",
+    fontSize:"24px",
+    fontWeight:"bold",
+    display:"none",
+    alignContent:"center",
+    textAlign:"center",
+    position:"absolute",
+    top:"-70px",
+    right:"-5px",
+    margin:"0",
+    boxShadow:"0 4px 8px rgba(0, 0, 0, 0.1)",
+});
+document.querySelector(".item-list").appendChild(lostButton);
+
+
+//for edit button
+let isEditing=false;
+
+
+editButton.onclick = () => {
+    isEditing=!isEditing;
+   
+    if (isEditing) {
+        editButton.innerText="Done";
+        editButton.style.backgroundColor="#acfc79";
+        editButton.style.borderWidth="0px";
+        lostButton.style.display="flex";
+    }
+    else {
+        editButton.innerText="Edit";
+        editButton.style.color="#000000";
+        editButton.style.backgroundColor="#828282";
+        editButton.style.borderWidth="2px";
+        lostButton.style.display="none";
+    }
+};
+
+
+//popup
+const popupLost = document.createElement("div");
+popupLost.innerHTML = `
+<div style="position: fixed; border-radius: 8px; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; height: 70%; background-color: white; display: flex; justify-content; center; align-items: center; z-index: 2000;">
+    <form action="placeholder.php" method="get" id="lost-query">
+        <label for="itemname">Item Description</label><br>
+        <input type="text" id="item-name" name="itemname" required><br><br>
+        <label for="itemdate">Date Received</label><br>
+        <input type="date" id="item-date" name="itemdate" required>
+        <button type="submit" id="submit-lost" style="position: absolute; bottom: 0%; right: 0%; transform: translate(-40%,-50%); background-color: #828282; border-width: 2px; border-style: solid; border-color: #000000; padding: 3px 20px; font-size: 14px; cursor: pointer;">Log</button>
+    </form><br><br>
+    <button id="close-lost" style="position: absolute; top: 0%; left: 100%; transform: translate(-175%,25%); background: none; border: none; cursor: pointer;">X</button>
+</div>`;
+
+
+Object.assign(popupLost.style, {
+    position: "fixed",
+    top: "0",
+    left: "0",
+    width: "100vw",
+    height: "100vh",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    display: "none",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: "2000"
+});
+
+
+//show popup
+document.body.appendChild(popupLost);
+lostButton.onclick = () =>  {
+    popupLost.style.display = "flex";
+    document.body.style.overflow = "hidden";
+};
+popupLost.querySelector("#close-lost").onclick = () => {
+    popupLost.style.display = "none";
+    document.body.style.overflow = "auto";
+};
+popupLost.querySelector("#submit-lost").onclick = event => {
+    event.preventDefault();
+
+
+    const descInput = document.getElementById("item-name");
+    const dateInput = document.getElementById("item-date");
+    if (!descInput.checkValidity()) {
+        descInput.reportValidity();
+        return;
+    }
+    if (!dateInput.checkValidity()) {
+        dateInput.reportValidity();
+        return;
+    }
+
+
+    const newItem = document.createElement("li");
+    newItem.innerHTML = `<strong>${descInput.value}</strong> - <small>${dateInput.value}</small>`;
+
+
+    const itemList = document.querySelector(".item-list");
+    itemList.appendChild(newItem);
+
+
+    document.getElementById("lost-query").reset();
+    popupLost.style.display = "none";
+    document.body.style.overflow = "auto";
+}
+
+
+//three bar dropdown
+const dropdown = document.createElement("button");
+dropdown.innerText="☰";
+Object.assign(dropdown.style, {
+    padding: "6px 18px",
+    fontWeight: "bold",
+    backgroundColor: "#000",
+    color: "#fff",
+    cursor: "pointer",
+    borderWidth: "0px",
+    fontSize: "30px",
+    display: "flex",
+    position: "absolute",
+    alignContent: "center",
+    right: "40px",
+});
+document.querySelector(".header").appendChild(dropdown);
+
+
+//dropdown popup
+const dropdownPopup = document.createElement("div");
+dropdownPopup.innerHTML = `
+<div style="display: flex; flex-direction: column; gap: 0px; width: 100%;">
+    <div class="header-buttons">
+        <img class="button-icon" src="Ticket.png">
+        <button class="create-ticket-btn" id="ticket-button">Submit Ticket</button>
+    </div>
+    <div class="button-line"></div>
+    <div class="header-buttons">
+        <img class="button-icon" src="Login.png">
+        <button class="login-btn" id="login-button">Log In</button>
+    </div>
+</div>`;
+
+
+Object.assign(dropdownPopup.style, {
+    borderWidth: "0px",
+    borderRadius: "10px",
+    padding: "10px 10px",
+    backgroundColor: "black",
+    top: "110%",
+    right: "50px",
+    color: "#fff",
+    display: "none",
+    position: "absolute",
+    zIndex: "2000",
+});
+document.querySelector(".header").appendChild(dropdownPopup);
+
+
+let isDown = false;
+dropdown.onclick = event => {
+    isDown=!isDown;
+    dropdownPopup.style.display=isDown ? "flex" : "none";
+};
+
+
+window.addEventListener('click', event => {
+    if (isDown && event.target !== dropdown && !dropdownPopup.contains(event.target) && !loginPage.contains(event.target)) {
+        isDown = false;
+        dropdownPopup.style.display = "none";
+    }
+});
+
+
+window.addEventListener('keydown', event => {
+    if (event.key === "Enter") {
+        if (popupLost.style.display === "flex") {
+            const descInput = document.getElementById("item-name");
+            const dateInput = document.getElementById("item-date");
+            const submitBtn = document.getElementById("submit-lost");
+
+
+            if (document.activeElement === descInput) {
+                event.preventDefault();
+                dateInput.focus();
+            }
+            else if (document.activeElement === dateInput) {
+                event.preventDefault();
+                submitBtn.focus();
+            }
+            else {
+                submitBtn.click();
+            }
+        }
+
+
+        if (loginPage.style.display === "flex") {
+            const login = document.getElementById("submit-login");
+
+
+            if (document.activeElement === adminUser) {
+                event.preventDefault();
+                adminPass.focus();
+            }
+            else if (document.activeElement === adminPass) {
+                event.preventDefault();
+                login.focus();
+            }
+            else {
+                login.click();
+            }
+        }
+
+        if (ticketPage.style.display === "flex") {
+            const ticket = document.getElementById("submit-ticket");
+
+            if (document.activeElement === ItemName) {
+                event.preventDefault();
+                ItemDesc.focus();
+            }
+            else if (document.activeElement === ItemDesc) {
+                event.preventDefault();
+                ItemLoc.focus();
+            }
+            else if (document.activeElement === ItemLoc) {
+                event.preventDefault();
+                ticket.focus();
+            }
+            else {
+                ticket.click();
+            }
+        }
+    }
+});
+
+
+window.addEventListener('keydown', event => {
+    if (event.key === "Escape") {
+        if (popupLost.style.display === "flex") {
+            popupLost.style.display = "none";
+            document.body.style.overflow = "auto";
+        }
+
+
+        if (loginPage.style.display === "flex") {
+            loginPage.style.display = "none";
+            document.body.style.overflow = "auto";
+            document.getElementById("login-query").reset();
+        }
+
+
+        if (ticketPage.style.display === "flex") {
+            ticketPage.style.display = "none";
+            document.body.style.overflow = "auto";
+        }
+    }
+});
+
+
+//flavor
+const wholeButton = dropdownPopup.querySelectorAll(".header-buttons");
+wholeButton.forEach(container => {
+    const btn = container.querySelector("button");
+    const icon = container.querySelector(".button-icon");
+
+
+    container.onmouseenter = () => {
+        if (icon) icon.style.filter = "brightness(0) invert(1) brightness(10)";
+        if (icon) icon.style.transition = "filter 0.1s ease";
+
+
+        btn.style.backgroundColor = "#0056b3";
+        btn.style.color = "white";
+    };
+
+
+    container.onmouseleave = () => {
+        if (icon) icon.style.filter = "none";
+
+
+        btn.style.backgroundColor = "#000";
+        btn.style.color = "rgb(167, 167, 167)"
+    };
+});
+
+
+//for login button
+const logAdmin = document.getElementById("login-button");
+const loginPage = document.createElement("div");
+loginPage.innerHTML = `
+<div style="position: fixed; border-radius: 20px; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; height: 70%; display: flex; justify-content: center; align-items: center; z-index: 2000; background-color: white;">
+    <div style="position: absolute; background-color: #0668c0; color: white; justify-content: center; display: flex; align-items: center; font-weight: bold; font-size: 26px; width: 97%; height: 5%; top: 10px; left: 50%; transform: translateX(-50%); padding: 10px 0px; border-radius: 20px; border-width: 10px;">LOG IN AS ADMIN
+    <button id="close-login" style="position: absolute; top: 45%; transform: translateY(-49%); left: 15px; background: none; border: none; cursor: pointer; font-weight: bold; font-size: 24px; color: white;">←</button></div>
+    <form id="login-query" style="margin-top: 20px; align-items: center; display: flex; flex-direction: column; gap: 20px;">
+        <div style="display: flex; align-items: center; justify-items: flex-end: width: 100%; gap: 10px;">
+            <label for="admin-user">USERNAME:</label>
+            <input type="text" style="background-color: #d9d9d9; border-radius: 20px; border-width: 0px; height: 25px; width: 180px; padding: 3px 10px; align-items: center; justify-content: center;" id="admin-username" required>
+        </div>iv style="position: fixed; border
+        <div style="display: flex; align-items: center; justify-items: flex-end: width: 100%; gap: 10px;">
+            <label for="admin-password">PASSWORD:</label>
+            <input type="password" style="background-color: #d9d9d9; border-radius: 20px; border-width: 0px; height: 25px; width: 180px; padding: 3px 10px; align-items: center; justify-content: center;" id="admin-password" required>
+        </div>
+        <button type="submit" id="submit-login" style="background-color: #0668c0; border-radius: 20px; height: 30px; width: 100px; padding: 3px 10px; align-items: center; justify-content: center; color: white; border-color: #0668c0; cursor: pointer; transition: background 0.2s ease;">LOG IN</button>
+    </form>
+</div>`;
+Object.assign(loginPage.style, {
+    position: "fixed",
+    top: "0",
+    left: "0",
+    width: "100vw",
+    height: "100vh",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    display: "none",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: "2000"
+});
+document.body.appendChild(loginPage);
+const loginOut = document.getElementById("close-login");
+const adminUser = document.getElementById("admin-username");
+const adminPass = document.getElementById("admin-password");
+
+
+//show login page
+logAdmin.onclick = event => {
+    loginPage.style.display = "flex";
+    document.body.style.overflow = "hidden";
+};
+
+
+//close login page
+loginOut.onclick = () => {
+    loginPage.style.display = "none";
+    document.body.style.overflow = "auto";
+};
+
+
+loginOut.onmouseenter = () => {
+    loginOut.innerText = "Close";
+    loginOut.style.fontSize = "20px";
+};
+loginOut.onmouseleave = () => {
+    loginOut.innerText = "←";
+    loginOut.style.fontSize = "24px";
+};
+
+
+loginPage.querySelector("#submit-login").onclick = event => {
+    event.preventDefault();
+
+
+    if (!adminUser.checkValidity()) {
+        adminUser.reportValidity();
+        return;
+    }
+    if (!adminPass.checkValidity()) {
+        adminPass.reportValidity();
+        return;
+    }
+
+
+    document.getElementById("login-query").reset();
+    loginPage.style.display = "none";
+    document.body.style.overflow = "auto";
+    dropdownPopup.style.display = "none";
+};
+
+
+//for submit ticket
+const submitTicket = document.getElementById("ticket-button");
+const ticketPage = document.createElement("div");
+ticketPage.innerHTML = `
+<div style="position: fixed; border-radius: 20px; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; height: 70%; display: flex; flex-direction: column; background-color: white; z-index: 2000; overflow: hidden; gap: 15px;">
+    
+    <div style="background-color: #0668c0; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; padding: 15px; position: relative;">
+        <button id="close-ticket" style="position: absolute; left: 15px; background: none; border: none; cursor: pointer; font-weight: bold; font-size: 24px; color: white;">←</button>
+        Found an item? Submit a ticket!
+    </div>
+
+    <div id="ticket-form-container" style="padding: 20px; flex-grow: 1; overflow-y: auto; color: #333; align">
+        <form id="ticket-form" style="display: flex; flex-direction: column; gap: 30px;">
+            
+        <label style="display: flex; flex-direction: column;">
+                Item Name: 
+                <input type="text" id="ItemName" style="margin-top: 5px; background-color: #d9d9d9; border-radius: 20px; border-width: 0px; height: 25px; width: 90%; padding: 3px 10px;" required>
+            </label>
+            
+            <label style="display: flex; flex-direction: column;">
+                Description: 
+                <textarea id="ItemDesc" style="margin-top: 5px; background-color: #d9d9d9; border-radius: 20px; border-width: 0px; height: 50px; width: 90%; padding: 10px; font-family: sans-serif;" required></textarea>
+            </label>
+            
+            <label style="display: flex; flex-direction: column;">
+                Location Found: 
+                <input type="text" id="ItemLoc" style="margin-top: 5px; background-color: #d9d9d9; border-radius: 20px; border-width: 0px; height: 25px; width: 90%; padding: 3px 10px;" required>
+            </label>
+            
+            <button type="submit" id="submit-ticket" style="background-color: #0668c0; color: white; border: none; padding: 10px; border-radius: 20px; cursor: pointer; width: 120px; margin-top: 10px;">Submit Item</button>
+        </form>
+    </div>
+
+</div>`;
+    ;
+
+Object.assign(ticketPage.style, {
+    position: "fixed",
+    top: "0",
+    left: "0",
+    width: "100vw",
+    height: "100vh",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    display: "none",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: "2000",
+});
+document.body.appendChild(ticketPage);
+const ticketOut = document.getElementById("close-ticket");
+
+
+//show submit ticket page
+submitTicket.onclick = () => {
+    ticketPage.style.display = "flex";
+    document.body.style.overflow = "hidden";
+};
+
+
+//close submit ticket page
+ticketOut.onclick = () => {
+    ticketPage.style.display = "none";
+    document.body.style.overflow = "auto";
+};
+
+
+ticketOut.onmouseenter = () => {
+    ticketOut.innerText = "Close";
+    ticketOut.style.fontSize = "20px";
+};
+ticketOut.onmouseleave = () => {
+    ticketOut.innerText = "←";
+    ticketOut.style.fontSize = "24px";
+};
+
+
+
+
+
+
