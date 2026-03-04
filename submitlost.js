@@ -405,7 +405,7 @@ ticketPage.innerHTML = `
     
     <div style="background-color: #0668c0; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; padding: 15px; position: relative;">
         <button id="close-ticket" style="position: absolute; left: 15px; background: none; border: none; cursor: pointer; font-weight: bold; font-size: 24px; color: white;">←</button>
-        Found an item? Submit a ticket!
+        Want to claim your lost item? Submit a ticket!
     </div>
 
     <div id="ticket-form-container" style="padding: 20px; flex-grow: 1; overflow-y: auto; color: #333; align">
@@ -422,8 +422,19 @@ ticketPage.innerHTML = `
             </label>
             
             <label style="display: flex; flex-direction: column;">
-                Location Found: 
+                Last Known Location: 
                 <input type="text" id="ItemLoc" style="margin-top: 5px; background-color: #d9d9d9; border-radius: 20px; border-width: 0px; height: 25px; width: 90%; padding: 3px 10px;" required>
+            </label>
+
+            <label style="display: flex; flex-direction: column;">
+                Date Lost:
+                <input type="date" id="ItemDate" style="margin-top: 5px; background-color: #d9d9d9; border-radius: 20px; border-width: 0px; height: 25px; width: 90%; padding: 3px 10px;" required>
+
+            </label>
+
+            <label style="display: flex; flex-direction: column;">
+            School ID for Verification:
+            <input type="file" id="ItemID" accept="image/*" style="margin-top: 5px; background-color: #d9d9d9; border-radius: 20px; border-width: 0px; height: 25px; width: 90%; padding: 3px 10px;" required>
             </label>
             
             <button type="submit" id="submit-ticket" style="background-color: #0668c0; color: white; border-radius: 20px; height: 50px; width: 150px; padding: 3px 10px; align-items: center; justify-content: center; color: white; border-color: #0668c0; cursor: pointer; transition: background 0.2s ease; font-size: 17px;">Submit Ticket</button>
