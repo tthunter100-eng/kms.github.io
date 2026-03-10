@@ -875,39 +875,49 @@ ticketOut.onmouseleave = () => {
     ticketOut.style.fontSize = "24px";
 };
 
+// Sidebar shiiiii
+const sidebarTrigger = document.createElement("div");
+sidebarTrigger.style.position = "fixed";
+sidebarTrigger.style.left = "0";
+sidebarTrigger.style.top = "0";
+sidebarTrigger.style.width = "10px";
+sidebarTrigger.style.height = "100%";
+sidebarTrigger.style.backgroundColor = "transparent";
+sidebarTrigger.style.zIndex = "1999";
+document.body.appendChild(sidebarTrigger);
 
+const sidebar = document.createElement("div");
+sidebar.innerHTML = "<p>Sidebar</p>";
+sidebar.style.position = "fixed";
+sidebar.style.left = "-700px";
+sidebar.style.top = "0";
+sidebar.style.width = "700px";
+sidebar.style.height = "100%";
+sidebar.style.backgroundColor = "lightgray";
+sidebar.style.transition = "left 0.3s";
+sidebar.style.zIndex = "1999";
+sidebar.style.padding = "20px";
+sidebar.style.boxSizing = "border-box";
+document.body.appendChild(sidebar);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+let sidebarTimeout;
+sidebarTrigger.addEventListener("mouseenter", () => {
+    clearTimeout(sidebarTimeout);
+    sidebar.style.left = "0";
+});
+sidebar.addEventListener("mouseenter", () => {
+    clearTimeout(sidebarTimeout);
+});
+sidebarTrigger.addEventListener("mouseleave", () => {
+    sidebarTimeout = setTimeout(() => {
+        sidebar.style.left = "-700px";
+    }, 300);
+});
+sidebar.addEventListener("mouseleave", () => {
+    sidebarTimeout = setTimeout(() => {
+        sidebar.style.left = "-700px";
+    }, 300);
+});
 
 
 
