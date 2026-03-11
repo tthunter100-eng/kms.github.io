@@ -239,6 +239,8 @@ popupLost.querySelector("#close-lost").onclick = () => {
     document.body.style.overflow = "auto";
 };
 
+const warning = document.createElement("div");
+document.body.appendChild(warning);
 
 popupLost.querySelector("#submit-lost").onclick = event => {
     event.preventDefault();
@@ -254,7 +256,6 @@ popupLost.querySelector("#submit-lost").onclick = event => {
     }
 
     //delete warning
-    const warning = document.createElement("div");
     warning.innerHTML = `
     <div style="padding: 20px 40px; text-align: center; align-content: center; justify-content: center; position: fixed; display: flex; flex-direction: column; border-radius: 20px; background-color: white; color: black; font-weight: bold; font-size: 24px; top: 50%; left: 50%; transform: translate(-50%, -50%); height: auto; min-height: 30%; width: 80%; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);">Deleting this item would also remove it from the logbook.<br> Do you wish to proceed?
         <div style="display: flex; flex-direction: row; gap: 50px; margin-top: 30px; justify-content: center; position: relative; background: none; padding: 10px 20px; width: 100%">
@@ -274,7 +275,6 @@ popupLost.querySelector("#submit-lost").onclick = event => {
         alignItems: "center",
         zIndex: "2000"
     });
-    document.body.appendChild(warning);
     warning.querySelector("#close-delete").onclick = event => {
         warning.style.display = "none";
         document.body.style.overflow = "auto";
@@ -293,7 +293,7 @@ popupLost.querySelector("#submit-lost").onclick = event => {
         listStyle: "none",
     });
     newItem.innerHTML = `<strong>${descInput.value}</strong> - <small>${dateInput.value}, ${typeInput.value}</small>
-    <button class="deleteButton" style="cursor: pointer; right: 10px; top: 50%; transform: translateY(-50%); padding: 2px 8px; position: absolute; display: block; background-color: red; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 18px;">X</button>`;
+    <button class="deleteButton" style="cursor: pointer; right: 10px; top: 50%; transform: translateY(-50%); padding: 2px 8px; position: absolute; display: block; background-color: red; color: white; border-width: 3px; border: red; border-radius: 8px; font-weight: bold; font-size: 18px;">X</button>`;
     newItem.querySelector(".deleteButton").onclick = event => {
         warning.style.display = "flex";
         document.body.style.overflow = "hidden";
@@ -687,26 +687,3 @@ sidebar.addEventListener("mouseleave", () => {
         sidebar.style.left = "-700px";
     }, 300);
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
