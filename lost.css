@@ -1,12 +1,28 @@
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background-color: #f0f2f5;
     color: #333;
+    position: relative;
+    min-height: 100vh;
 }
 
-
-
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    filter: blur(1px);
+    opacity: 0.9;
+    z-index: -1;
+    transform: scale(1.1);
+    background-image: url('CDM\ background.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+}
 
 .header {
     background-color: #000;
