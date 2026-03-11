@@ -178,6 +178,7 @@ editButton.onclick = () => {
         editButton.style.borderWidth="0px";
         lostButton.style.display="flex";
         allDeleteButtons.forEach(btn => btn.style.display = "block");
+        deleteItem="null";
     }
     else {
         editButton.innerText="Edit";
@@ -186,6 +187,7 @@ editButton.onclick = () => {
         editButton.style.borderWidth="2px";
         lostButton.style.display="none";
         allDeleteButtons.forEach(btn => btn.style.display = "none");
+        deleteItem="null";
     }
 };
 
