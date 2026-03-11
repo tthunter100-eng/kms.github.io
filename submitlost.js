@@ -884,7 +884,7 @@ Object.assign(sidebarTrigger.style, {
     width: "10px",
     height: "100%",
     backgroundColor: "transparent",
-    zIndex: "1999",
+    zIndex: "1999"
 });
 document.body.appendChild(sidebarTrigger);
 
@@ -920,6 +920,7 @@ sidebar.addEventListener("mouseleave", () => {
         sidebar.style.left = "-700px";
     }, 300);
 });
+
 
 
 
