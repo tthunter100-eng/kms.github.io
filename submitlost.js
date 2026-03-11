@@ -879,6 +879,7 @@ ticketOut.onmouseleave = () => {
 const sidebarTrigger = document.createElement("div");
 Object.assign(sidebarTrigger.style, {
     position: "fixed",
+    display: "flex",
     left: "0",
     top: "0",
     width: "10px",
@@ -920,6 +921,7 @@ sidebar.addEventListener("mouseleave", () => {
         sidebar.style.left = "-700px";
     }, 300);
 });
+
 
 
 
