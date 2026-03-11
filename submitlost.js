@@ -179,6 +179,7 @@ editButton.onclick = () => {
         editButton.style.backgroundColor="#acfc79";
         editButton.style.borderWidth="0px";
         lostButton.style.display="flex";
+        allDeleteButtons.forEach(btn => btn.style.display="flex");
     }
     else {
         editButton.innerText="Edit";
@@ -187,6 +188,7 @@ editButton.onclick = () => {
         editButton.style.borderWidth="2px";
         deleteButton.style.display="none";
         lostButton.style.display="none";
+        allDeleteButtons.forEach(btn => btn.style.display="none");
     }
 };
 
@@ -925,6 +927,7 @@ sidebar.addEventListener("mouseleave", () => {
         sidebar.style.left = "-700px";
     }, 300);
 });
+
 
 
 
