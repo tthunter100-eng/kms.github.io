@@ -35,7 +35,10 @@ lostSomething.innerHTML = `
 <h style="font-size: 38px; font-weight: bold; margin: 0; line-height: 1;">Lost Something?<br>We Got You.</h><br>
 <h style="font-size: 17px; font-weight: normal; margin: 0; line-height: 1.1;">Browse surrendered items and claim what's yours.</h><br>
 <div style="height: 50px; width: 200px; top: 20px; display: flex; position: relative;">
-    <button class="create-ticket-btn" id="ticket-button">Submit a ticket</button>
+    <button class="create-ticket-btn" id="ticket-button" style="display: flex; flex-direction: row; padding: 5px 15px; gap: 5px; align-items: center;">
+    <img src="submitticket.png" style="position: relative; height: 95%; width: 20%;" alt="icon" class="submit-ticket-icon">
+    <span>Submit a ticket</span>
+    </button>
 </div>
 `;
 Object.assign(lostSomething.style, {
