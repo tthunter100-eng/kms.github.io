@@ -42,14 +42,14 @@ body::before {
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    width: 50px;
-    height: 50px;
+    width: 75px;
+    height: 75px;
     margin-right: 10px;
     flex-shrink: 0;
 }
 
 .school-logo {
-    width: 60px;
+    width: 85px;
     height: auto;
 }
 
@@ -60,21 +60,21 @@ body::before {
 }
 
 .header-titles h1 {
-    font-size: 14px;
+    font-size: 16px;
     font-weight: bold;
     margin: 0;
     line-height: 1.1;
 }
 
 .header-titles h2 {
-    font-size: 24px;
+    font-size: 26px;
     font-weight: bold;
     margin: 0;
     line-height: 1.1;
 }
 
 .header-titles h3 {
-    font-size: 15px;
+    font-size: 18px;
     font-weight: bold;
     margin: 0;
     line-height: 1.1;
@@ -147,12 +147,13 @@ body::before {
     background: linear-gradient(to right, var(--grad-color-1), var(--grad-color-2));
     color: white;
     cursor: pointer;
-    height: 35px;
-    width: 150px;
+    height: 40px;
+    width: 200px;
     padding: 2px 4px;
     border-radius: 20px;
     border: none;
     transition: transform 0.2s ease, --grad-color-1 0.5s ease, --grad-color-2 0.5s ease;
+    font-size: 18px;
 }
 
 
@@ -204,16 +205,35 @@ body::before {
 
 
 .item-list-container {
-    background-color: #fff;
+    background-color: #192b5e;
+    opacity: 0.93;
+    padding: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100vw;
+    text-align: center;
+    justify-content: center;
+    position: fixed;
+    height: 55vh;
+    bottom: 0;
+    left: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+
+
+
+
+.item-list-container-1 {
+    background-color: #192a59;
+    opacity: 0.9;
     padding: 30px;
-    border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     width: 100%;
-    max-width: 600px;
+    height: 100%;
     text-align: center;
-    position: relative;
-
-
+    box-sizing: border-box;
+    z-index: 2000;
 }
 
 
