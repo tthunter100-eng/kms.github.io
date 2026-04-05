@@ -208,8 +208,10 @@ popupLost.innerHTML = `
     </div>
     <div style="position: relative; display: flex; flex-direction: column; background: none; gap: 20px; margin-left: 30px; margin-top: 20px; align-items: left;">
         <form action="placeholder.php" method="get" id="lost-query">
-            <label for="itemname">Item Description</label><br>
+            <label for="itemname">Item Name</label><br>
             <input type="text" id="item-name" name="itemname" style="padding: 5px 5px; height: 20px; width: 95%; background-color: #d9d9d9; color: black; border-radius: 20px; border: none;" required><br><br>
+            <label for="itemdesc">Item Description</label><br>
+            <input type="text" id="item-desc" name="itemdesc" style="padding: 5px 5px; height: 20px; width: 95%; background-color: #d9d9d9; color: black; border-radius: 20px; border: none;" required><br><br>
             <label for="personname">Surrendered by:</label><br>
             <input type="text" id="person-name" name="personname" style="padding: 5px 5px; height: 20px; width: 95%; background-color: #d9d9d9; color: black; border-radius: 20px; border: none;" required><br><br>
             <label for="itemtype">Item Type</label><br>
@@ -446,12 +448,17 @@ popupLost.querySelector("#submit-lost").onclick = event => {
 window.addEventListener('keydown', event => {
     if (event.key === "Enter") {
         if (popupLost.style.display === "flex") {
-            const descInput = document.getElementById("item-name");
+            const titleInput = document.getElementById("item-name");
+            const descInput = document.getElementById("item-desc")
             const nameInput = document.getElementById("person-name");
             const dateInput = document.getElementById("item-date");
             const submitBtn = document.getElementById("submit-lost");
 
-            if (document.activeElement === descInput) {
+            if (document.activeElement === titleInput) {
+                event.preventDefault();
+                descInput.focus();
+            }
+            else if (document.activeElement === descInput) {
                 event.preventDefault();
                 nameInput.focus();
             }
