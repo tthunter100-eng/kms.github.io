@@ -1,8 +1,5 @@
-//test
-console.log("Current Storage:", localStorage.getItem('libraryInventory'));
-
-//grabbing data
-let inventory = JSON.parse(localStorage.getItem('libraryInventory')) || [];
+//global inventory
+let globalInventory = [];
 
 //personal information section
 const personalInfo = document.createElement("div");
@@ -12,26 +9,26 @@ personalInfo.innerHTML = `
         <span style="font-size: 28px; font-weight: normal; text-align: left; justify-content: center; align-content: center; margin: 0;">Personal Information</span>
     </div>
     <div style="box-sizing: border-box; margin-top: 50px; height: 100%; width: 100%; position: relative; display: flex; flex-direction: column; padding: 20px 20px;">
-        <form>
+        <form action="placeholder.php" id="pInfo" method="post">
             <label for="personname" style="font-size: 15px;">Full Name:</label><span style="color: red; font-weight: bold;">*</span><br>
-            <input id="person-name" style="height: 20px; width: 100%; background-color: #ffffff; border: none;" required><br><br>
+            <input name="full_name" id="person-name" style="height: 20px; width: 100%; background-color: #ffffff; border: none;" required><br><br>
             <label for="personrole" style="font-size: 15px;">Role in School:</label><span style="color: red; font-weight: bold;">*</span><br>
-            <select id="person-role" style="transition: 0.1s ease; height: 30px; min-width: 150px; background-color: transparent; border: 2px solid blue;" required><br><br>
+            <select name="school_role" id="person-role" style="transition: 0.1s ease; height: 30px; min-width: 150px; background-color: transparent; border: 2px solid blue;" required><br><br>
                 <option value="" disabled selected>Select a role</option>
                 <option value="student">Student</option>
                 <option value="staff">Staff</option>
                 <option value="guest">Guest</option>
             </select><br><br>
             <label for="studentnumber" style="font-size: 15px;">Student Number (if applicable):</label><span id="sym-num" style="color: red; font-weight: bold;">/</span><br>
-            <input value="N/A" id="student-number" style="height: 20px; width: 100%; background-color: #d1d1d1; border: none;" disabled><br><br>
+            <input name="student_number" value="N/A" id="student-number" style="height: 20px; width: 100%; background-color: #d1d1d1; border: none;" disabled><br><br>
             <label for="studentprogram" style="font-size: 15px;">Program (if applicable):</label><span id="sym-prog" style="color: red; font-weight: bold;">/</span><br>
-            <input value="N/A" id="student-program" style="height: 20px; width: 100%; background-color: #d1d1d1; border: none;" disabled><br><br>
+            <input name="student_program" value="N/A" id="student-program" style="height: 20px; width: 100%; background-color: #d1d1d1; border: none;" disabled><br><br>
             <label for="persondept" style="font-size: 15px;">Department (if applicable):</label><span id="sym-dept" style="color: red; font-weight: bold;">/</span><br>
-            <input value="N/A" id="person-dept" style="height: 20px; width: 100%; background-color: #d1d1d1; border: none;"disabled><br><br>
+            <input name="person_department" value="N/A" id="person-dept" style="height: 20px; width: 100%; background-color: #d1d1d1; border: none;"disabled><br><br>
             <label for="email" style="font-size: 15px;">Email Address:</label><span style="color: red; font-weight: bold;">*</span><br>
-            <input id="email" style="height: 20px; width: 100%; background-color: #ffffff; border: none;" required><br><br>
+            <input name="person_email" id="email" style="height: 20px; width: 100%; background-color: #ffffff; border: none;" required><br><br>
             <label for="identification" style="font-size: 15px;">School ID/COR/Staff ID/Government ID for Verification:</label><span style="color: red; font-weight: bold;">*</span><br>
-            <input type="file" accept="image/*" id="identification" style="height: 30px; width: 100%; border: none;" required><br><br>
+            <input name="id_image" type="file" accept="image/*" id="identification" style="height: 30px; width: 100%; border: none;" required><br><br>
         </form>
     </div>
 `;
@@ -51,12 +48,15 @@ Object.assign(personalInfo.style, {
 });
 document.querySelector(".div-container").appendChild(personalInfo);
 
-//select option logic
+//constants for personal data functions
+const personName = document.getElementById("person-name");
 const roleSelect = document.getElementById("person-role");
 const studentNum = document.getElementById("student-number");
 const studentProg = document.getElementById("student-program");
 const deptInput = document.getElementById("person-dept");
+const personMail = document.getElementById("email");
 
+//select option logic
 roleSelect.addEventListener("change", () => {
     const role = roleSelect.value;
     
@@ -91,6 +91,35 @@ function disabledField(input, symbolSpan) {
         if (symbolSpan) symbolSpan.innerText = "/";
 }
 
+//personal information form submission
+const pForm = personalInfo.querySelector("form");
+pForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const personalData = new FormData(pForm);
+
+    if (studentNum.disabled) {
+        personalData.append("student_number", "N/A");
+    }
+    if (studentProg.disabled) {
+        personalData.append("student_program", "N/A");
+    }
+    if (deptInput.disabled) {
+        personalData.append("person_department", "N/A");
+    }
+    
+    fetch('placeholder.php/submit', {
+            method: 'POST',
+            body: personalData
+    })
+
+    .then(response => {
+        if (!response.ok) throw new Error("Server error");
+        return response.json();
+    })
+    .then(data => console.log("Success from server: ", data))
+    .catch(error => console.error("Error: ", error));
+});
+
 //item information section
 const itemInfo = document.createElement("div");
 itemInfo.innerHTML = `
@@ -99,23 +128,23 @@ itemInfo.innerHTML = `
         <span style="font-size: 28px; font-weight: normal; text-align: left; justify-content: center; align-content: center; margin: 0;">Item Information</span>
     </div>
     <div style="box-sizing: border-box; margin-top: 90px; height: 100%; width: 100%; position: relative; display: flex; flex-direction: column; padding: 20px 40px;">
-        <form>
+        <form action="placeholder.php" id="iInfo" method="post">
             <label for="itemcode" style="font-size: 15px;">Code:</label><span style="color: red; font-weight: bold;">*</span><br>
-            <select id="item-code" style="transition: 0.1s ease; height: 30px; min-width: 150px; background-color: transparent; border: 2px solid blue;" required>
+            <select name="item_code" id="item-code" style="transition: 0.1s ease; height: 30px; min-width: 150px; background-color: transparent; border: 2px solid blue;" required>
                 <option value="" disabled selected>Select a code</option>
             </select><br><br>
             <label for="itemname" style="font-size: 15px;">Item Name:</label><span id="sym-itemname" style="color: red; font-weight: bold;">/</span><br>
-            <input value="N/A" id="item-name" style="height: 20px; width: 100%; background-color: #d1d1d1; border: none;" disabled><br><br>
+            <input name="item_name" value="N/A" id="item-name" style="height: 20px; width: 100%; background-color: #d1d1d1; border: none;" disabled><br><br>
             <label for="itemdesc" style="font-size: 15px;">Item Description:</label><span id="sym-itemdesc" style="color: red; font-weight: bold;">/</span><br>
-            <input value="N/A" id="item-desc" style="height: 20px; width: 100%; background-color: #d1d1d1; border: none;" disabled><br><br>
+            <input name="item_desc" value="N/A" id="item-desc" style="height: 20px; width: 100%; background-color: #d1d1d1; border: none;" disabled><br><br>
             <label for="features" style="font-size: 15px;">Distinguishing Features (optional):</label><br>
-            <input id="features" style="height: 20px; width: 100%; background-color: #ffffff; border: none;"><br><br>
+            <input name="item_features" id="features" style="height: 20px; width: 100%; background-color: #ffffff; border: none;"><br><br>
             <label for="lastknownloc" style="font-size: 15px;">Last Known Location:</label><span style="color: red; font-weight: bold;">*</span><br>
-            <input id="last-loc" style="height: 20px; width: 100%; background-color: #ffffff; border: none;" required><br><br>
+            <input name="last_location" id="last-loc" style="height: 20px; width: 100%; background-color: #ffffff; border: none;" required><br><br>
             <label for="lostdate" style="font-size: 15px;">Date Lost:</label><br>
-            <input type="date" id="lost-date" style="height: 20px; width: 100%; background-color: #ffffff; border: none;"><br><br>
+            <input name="lost_date" type="date" id="lost-date" style="height: 20px; width: 100%; background-color: #ffffff; border: none;"><br><br>
             <label for="itempic" style="font-size: 15px;">Picture of the item (optional):</label><br>
-            <input type="file" accept="image/*" id="item-pic" style="height: 30px; width: 100%; border: none;"><br><br>
+            <input name="item_image" type="file" accept="image/*" id="item-pic" style="height: 30px; width: 100%; border: none;"><br><br>
         </form>
     </div>
 `;
@@ -132,56 +161,78 @@ Object.assign(itemInfo.style, {
 });
 document.querySelector(".div-container").appendChild(itemInfo);
 
+//constants for item data functions
+const itemCode = document.getElementById("item-code");
+const itemName = document.getElementById("item-name");
+const itemDesc = document.getElementById("item-desc");
+const itemFeatures = document.getElementById("features");
+const lastLocation = document.getElementById("last-loc");
+const lostDate = document.getElementById("lost-date");
+
 //code select logic
 window.itemCodes = () => {
-    const codeSelect = document.getElementById("item-code");
+    if(!itemCode) return;
 
-    if (!codeSelect) {return};
+    fetch('placeholder.php/get-inventory')
+    .then(response => {
+        if (!response.ok) throw new Error("Network response was not ok");
+        return response.json();
+    })
+    .then(inventory => {
+        itemCode.innerHTML = `<option value="" disabled selected>Select a code</option>`;
+        globalInventory = inventory;
 
-    const currentInventory = JSON.parse(localStorage.getItem('libraryInventory')) || [];
-    itemCodeSelect.innerHTML = `<option value="" disabled selected>Select a code</option>`;
-    
-    currentInventory.forEach(item => {
-        const option = document.createElement("option");
-        option.value = item.code;
-        option.textContent = item.code;
-        itemCodeSelect.appendChild(option);
+        inventory.forEach(item => {
+            const option = document.createElement("option");
+            option.value = item.code;
+            option.textContent = item.code;
+            itemCode.appendChild(option); 
+        });
+    })
+    .catch(error => {
+        console.error("Error fetching inventory: ", error);
+        itemCode.innerHTML = `<option value="" disabled selected>Select a code</option>`;
     });
-};
+};  
 
-const itemCodeSelect = document.getElementById("item-code");
-itemCodeSelect.addEventListener("change", (e) => {
+itemCode.addEventListener("change", (e) => {
     const selectedCode = e.target.value;
-    const currentInventory = JSON.parse(localStorage.getItem('libraryInventory')) || [];
-    const matchedItem = currentInventory.find(item => item.code === selectedCode);
-    const nameInput = document.getElementById("item-name");
-    const descInput = document.getElementById("item-desc");
+    const matchedItem = globalInventory.find(item => item.code === selectedCode);
 
     if (matchedItem) {  
-        enabledField(nameInput, document.getElementById("sym-itemname"));
-        enabledField(descInput, document.getElementById("sym-itemdesc"));
-        nameInput.value = matchedItem.name;
-        descInput.value = matchedItem.desc;
+        enabledField(itemName, document.getElementById("sym-itemname"));
+        enabledField(itemDesc, document.getElementById("sym-itemdesc"));
+        itemName.value = matchedItem.name;
+        itemDesc.value = matchedItem.desc;
     }
     else {
-        disabledField(nameInput, document.getElementById("sym-itemname"));
-        disabledField(descInput, document.getElementById("sym-itemdesc"));
+        disabledField(itemName, document.getElementById("sym-itemname"));
+        disabledField(itemDesc, document.getElementById("sym-itemdesc"));
     }
 });
 
-window.itemCodes = () => {
-    const codeSelect = document.getElementById("item-code");
+//item information submission
+const iForm = itemInfo.querySelector("form");
+iForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const itemData = new FormData(iForm);
 
-    if(!codeSelect) {return};
+    if (itemName.disabled) {
+        itemData.append("item_name", "N/A");
+    }
+    if (itemDesc.disabled) {
+        itemData.append("item_desc", "N/A");
+    }
+    
+    fetch('placeholder.php/submit', {
+            method: 'POST',
+            body: itemData
+    })
 
-    const currentInventory = JSON.parse(localStorage.getItem('libraryInventory')) || [];
-
-    codesSelect.innerHTML = `<option value="" disabled selected> Select a code</option>`;
-
-    currentInventory.forEach(item => {
-       const option = document.createElement("option");
-       option.value = item.code;
-       option.textContent = item.code;
-       codeSelect.appendChild(option); 
-    });
-}; 
+    .then(response => {
+        if (!response.ok) throw new Error("Server error");
+        return response.json();
+    })
+    .then(data => console.log("Success from server: ", data))
+    .catch(error => console.error("Error: ", error));
+});
