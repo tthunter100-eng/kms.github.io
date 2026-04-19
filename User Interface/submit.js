@@ -9,7 +9,7 @@ personalInfo.innerHTML = `
         <span style="font-size: 28px; font-weight: normal; text-align: left; justify-content: center; align-content: center; margin: 0;">Personal Information</span>
     </div>
     <div style="box-sizing: border-box; margin-top: 50px; height: 100%; width: 100%; position: relative; display: flex; flex-direction: column; padding: 20px 20px;">
-        <form action="placeholder.php" id="pInfo" method="post">
+        <form action="ticket.php" id="pInfo" method="post">
             <label for="personname" style="font-size: 15px;">Full Name:</label><span style="color: red; font-weight: bold;">*</span><br>
             <input name="full_name" id="person-name" style="height: 20px; width: 100%; background-color: #ffffff; border: none;" required><br><br>
             <label for="personrole" style="font-size: 15px;">Role in School:</label><span style="color: red; font-weight: bold;">*</span><br>
@@ -91,35 +91,6 @@ function disabledField(input, symbolSpan) {
         if (symbolSpan) symbolSpan.innerText = "/";
 }
 
-//personal information form submission
-const pForm = personalInfo.querySelector("form");
-pForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const personalData = new FormData(pForm);
-
-    if (studentNum.disabled) {
-        personalData.append("student_number", "N/A");
-    }
-    if (studentProg.disabled) {
-        personalData.append("student_program", "N/A");
-    }
-    if (deptInput.disabled) {
-        personalData.append("person_department", "N/A");
-    }
-    
-    fetch('placeholder.php/submit', {
-            method: 'POST',
-            body: personalData
-    })
-
-    .then(response => {
-        if (!response.ok) throw new Error("Server error");
-        return response.json();
-    })
-    .then(data => console.log("Success from server: ", data))
-    .catch(error => console.error("Error: ", error));
-});
-
 //item information section
 const itemInfo = document.createElement("div");
 itemInfo.innerHTML = `
@@ -128,7 +99,7 @@ itemInfo.innerHTML = `
         <span style="font-size: 28px; font-weight: normal; text-align: left; justify-content: center; align-content: center; margin: 0;">Item Information</span>
     </div>
     <div style="box-sizing: border-box; margin-top: 90px; height: 100%; width: 100%; position: relative; display: flex; flex-direction: column; padding: 20px 40px;">
-        <form action="placeholder.php" id="iInfo" method="post">
+        <form action="ticket.php" id="iInfo" method="post">
             <label for="itemcode" style="font-size: 15px;">Code:</label><span style="color: red; font-weight: bold;">*</span><br>
             <select name="item_code" id="item-code" style="transition: 0.1s ease; height: 30px; min-width: 150px; background-color: transparent; border: none;" required>
                 <option value="" disabled selected>Select a code</option>
@@ -241,14 +212,28 @@ submitTicket.onclick = () => {
     const validateItem = validate(iForm);
 
     if (!terms.checked) {
-        terms.reportValidity();
+        alert("Please agree to the policy first before submitting.");
         return;
     }
     if (validatePersonal && validateItem) {
-        pForm.requestSubmit();
-        iForm.requestSubmit();
-        submitTicket.disabled = true;
-        submitTicket.textContent = "Submitted!";
+        const combinedData = new FormData(pForm);
+        const itemData = new FormData(iForm);
+
+        for (let [key, value] of itemData.entries()) {
+            combinedData.append(key, value);
+        }
+
+        fetch('submit.php', {
+            method: 'POST',
+            body: combinedData
+        })
+        .then(res => res.json())
+        .then(data => {
+            console.log(data);
+            alert("Ticket submitted successfully.");
+            window.location.href = "user.html";
+        })
+        .catch(err => console.error(err));
     }
 };
 
@@ -324,29 +309,3 @@ function validate(form) {
     });
     return isValid;
 }
-
-//item information submission
-const iForm = itemInfo.querySelector("form");
-iForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const itemData = new FormData(iForm);
-
-    if (itemName.disabled) {
-        itemData.append("item_name", "N/A");
-    }
-    if (itemDesc.disabled) {
-        itemData.append("item_desc", "N/A");
-    }
-    
-    fetch('placeholder.php/submit', {
-            method: 'POST',
-            body: itemData
-    })
-
-    .then(response => {
-        if (!response.ok) throw new Error("Server error");
-        return response.json();
-    })
-    .then(data => console.log("Success from server: ", data))
-    .catch(error => console.error("Error: ", error));
-});
