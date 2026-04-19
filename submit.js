@@ -214,7 +214,9 @@ itemCode.addEventListener("change", (e) => {
 //submit button
 const submitAndCancel = document.createElement("div");
 submitAndCancel.innerHTML = `
-    <input type="checkbox" id="policy-check" style="height: 18px; width: 18px; background-color: transparent; border: 2px solid #898989;" required>
+    <div style="align-items: center; display: flex; position: relative; font-size: 15px; right; 0; margin-right: 10px; margin-bottom: 10px;">
+        <input type="checkbox" id="policy-check" style="height: 18px; width: 18px; background-color: transparent; position: relative; position: relative;" required>I agree to the <button id="agreement" style="padding: 0; margin: 5px; background-color: transparent; border: none; color: blue; cursor: pointer; font-size: 15px;">Platform Agreement & Privacy Policy</button></input>
+    </div>
     <button id="submit-cancel" style="height: 50px; width: 120px; justify-content: center; align-items: center; background-color: #c0c0c0; border: none; cursor: pointer; font-weight: bold; font-size: 15px; color: black; margin-right: 20px;">Cancel</button>
     <button type="submit" id="submit-ticket" style="height: 50px; width: 120px; justify-content: center; align-items: center; background-color: #2e4279; border: none; cursor: pointer; font-weight: bold; font-size: 15px; color: white; margin-right: 45px;">Submit</button>
 `;
@@ -226,6 +228,7 @@ Object.assign(submitAndCancel.style, {
     display: "flex",
     backgroundColor: "transparent",
     justifyContent: "flex-end",
+    gap: "10px",
     border: "none",
     padding: "10px 15px",
 });
@@ -237,6 +240,10 @@ submitTicket.onclick = () => {
     const validatePersonal = validate(pForm);
     const validateItem = validate(iForm);
 
+    if (!terms.checked) {
+        terms.reportValidity();
+        return;
+    }
     if (validatePersonal && validateItem) {
         pForm.requestSubmit();
         iForm.requestSubmit();
@@ -255,13 +262,59 @@ cancelButton.onclick = () => {
     }
 };
 
+//terms onclick
+const termsPopup = document.createElement("div");
+termsPopup.innerHTML = `
+    <div style="position: fixed; display: flex; height: 70%; width: 90%; border-radius: 40px; border: 3px solid #11236b; background-color: #ffffff; color: #000000; padding: 20px 30px;">
+        <div style="position: relative; top: 0; height: 10%; width: 98.3%; display: flex; justify-content: left; align-items: center; gap: 15px; left: 0;">
+            <img src="P-ICON.png" style="height: 100%; width: 5%;">
+            <p style="position: relative; font-size: 30px;">Platform Agreement & Data Privacy Policy</p>
+        </div>
+        <p style="position: absolute; font-size: 21px; margin-top: 100px;">All information submitted through the Lost and Found System shall be collected, recorded, and processed strictly for the purpose of facilitating the documentation, identification, and recovery of lost items within the institution. The data collected includes descriptive details of the item (e.g., last known location, date of loss, and optional photographic evidence), as well as personal information provided by individuals asserting ownership. Such personal information encompass the claimant’s full name, institutional role, student number (if applicable), academic program, department, email address, and relevant supporting identification (e.g., school identification card or Certificate of Registration) for verification purposes.<br><br>
+The Office of the Prefect of Discipline affirms its commitment to the protection and confidentiality of all personal data obtained through this platform. All collected information shall be managed and stored securely in accordance with prevailing data protection laws and institutional policies. Furthermore, such data shall not be disclosed, disseminated, or otherwise made accessible to unauthorized parties without the explicit consent of the data subject, except where disclosure is mandated by law or permitted by institutional authority.<br><br>
+By submitting any report, claim, or related information through this system, the user acknowledges having read and comprehended the terms stated in this Agreement and thereby consents to the collection, use, and processing of their personal data exclusively for purposes related to the administration of the Lost and Found System and other legitimate institutional functions.
+</p>
+    </div>
+    `;
+Object.assign(termsPopup.style, {
+    height: "100vh",
+    width: "100vw",
+    position: "fixed",
+    top: "0",
+    left: "0",
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    display: "none",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: "5000",
+});
+document.querySelector(".div-container").appendChild(termsPopup);
+
+
+const terms = document.getElementById("agreement");
+terms.onclick = () => {
+    termsPopup.style.display = "flex";
+};
+
+termsPopup.onclick = (e) => {
+    if (e.target === termsPopup) {
+        termsPopup.style.display = "none";
+    }
+};
+
+window.addEventListener('keydown', (e) => {
+    if (e.key === "Escape") {
+        termsPopup.style.display = "none";
+    }
+});
+
 //required
 function validate(form) {
     let isValid = true;
     const requiredFields = form.querySelectorAll("[required]");
 
     requiredFields.forEach(field => {
-        if (!field.value || field.value.trim() === "") {
+        if (!field.value || field.value.trim() === "" ) {
             field.style.border = "2px solid red";
             isValid = false;
         }
