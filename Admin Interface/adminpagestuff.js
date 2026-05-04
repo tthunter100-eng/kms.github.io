@@ -386,8 +386,8 @@ function renderList() {
   const filteredData = activeData.filter(entry => {
     const matchesFilter = currentFilter === 'all' || entry.status === currentFilter;
     const matchesSearch = currentSection === 'items'
-      ? (entry.code.toLowerCase().includes(searchText) || entry.name.toLowerCase().includes(searchText))
-      : (entry.fullName.toLowerCase().includes(searchText) || entry.studentNumber.toLowerCase().includes(searchText));
+      ? (entry.code?.toLowerCase().includes(searchText) || entry.name?.toLowerCase().includes(searchText))
+      : (entry.fullName?.toLowerCase().includes(searchText) || entry.studentNumber?.toLowerCase().includes(searchText));
     return matchesFilter && matchesSearch;
   });
 
@@ -395,7 +395,7 @@ function renderList() {
     const itemEl = document.createElement('div');
     itemEl.className = 'list-item-entry';
     itemEl.style.cursor = 'pointer';
-    itemEl.addEventListener('click', () => viewItem(entry.id));
+    itemEl.addEventListener('click', () => viewItem(entry._id || entry.id));
 
     const colors = {
       claimed: '#27ae60', approved: '#27ae60',
@@ -467,7 +467,7 @@ saveBtn.addEventListener('click', async () => {
       return;
     }
 
-    entry = { id: Date.now(), fullName, role, studentNumber, program, department, email, status };
+    entry = { fullName, role, studentNumber, program, department, email, status };
   }
   else {
     const codeInput = document.getElementById('code').value.trim();
@@ -482,7 +482,6 @@ saveBtn.addEventListener('click', async () => {
 
     // 3. Create the entry object
       entry = {
-        id: Date.now(),
         codeInput,
         nameInput,
         status: statusSelect.value,
