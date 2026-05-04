@@ -23,7 +23,8 @@ async function startServer() {
     }
 }
 
-app.get('/api/data', async (req, res) => {
+//inventory routes
+app.get('/api/inventory ', async (req, res) => {
     try {
         const collection = db.collection('items');
         const data = await collection.find({}).toArray();
@@ -34,13 +35,39 @@ app.get('/api/data', async (req, res) => {
     }
 });
 
-app.post('/api/data', async (req, res) => {
+app.post('/api/inventory', async (req, res) => {
     try {
         const collection = db.collection('items');
-        const result = await collection.insertOne(req.body);
-        res.status(201).json(result);
+        const newItem = { ...req.body };
+        const result = await collection.insertOne(newItem);
+        newItem._id = result.insertedId;
+        res.status(201).json(newItem);
     }
     catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+//tickets routes
+app.get('/api/tickets', async (req, res) => {
+    try {
+        const collection = db.collection('tickets');
+        const data = await collection.find({}).toArray();
+        res.status(200).json(data);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.post('/api/tickets', async (req, res) => {
+    try {
+        const collection = db.collection('tickets');
+        const newTicket = { ...req.body };
+        const result = await collection.insertOne(newTicket);
+        
+        newTicket._id = result.insertedId;
+        res.status(201).json(newTicket);
+    } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
