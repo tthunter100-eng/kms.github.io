@@ -48,7 +48,7 @@ submitTicket.onclick = () => {
 const searchContainer = document.createElement("div");
 searchContainer.innerHTML = `
 <div style="position: relative; display: flex; align-items: center; border-radius: 40px; background-color: #ccc; height: 40px; width: 590px;">
-    <img src="searchIco.png" style="height: 100%; width: 8%; margin-left: 10px; z-index: 2000;">
+    <img src="SearchIco.png" style="height: 100%; width: 8%; margin-left: 10px; z-index: 2000;">
     <input type="text" id="search-input" placeholder="Filter list..." style="padding: 6px 10px; background: transparent; border: none; width: 100%; font-size: 20px; outline: none;">
     <button id="clear-search" style="position: absolute; right: 8px; background: none; border: none; cursor: pointer; color: #888; font-weight: bold; display: none;">✕</button>
 </div>
