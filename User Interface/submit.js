@@ -144,7 +144,7 @@ const lostDate = document.getElementById("lost-date");
 window.itemCodes = () => {
     if(!itemCode) return;
 
-    fetch('placeholder.php/get-inventory')
+    fetch('/api/inventory')
     .then(response => {
         if (!response.ok) throw new Error("Network response was not ok");
         return response.json();
@@ -223,8 +223,9 @@ submitTicket.onclick = () => {
             combinedData.append(key, value);
         }
 
-        fetch('submit.php', {
+        fetch('/api/tickets', {
             method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
             body: combinedData
         })
         .then(res => res.json())
@@ -292,6 +293,16 @@ window.addEventListener('keydown', (e) => {
         termsPopup.style.display = "none";
     }
 });
+
+//simple image file to base64 converter
+function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+    });
+}
 
 //required
 function validate(form) {
