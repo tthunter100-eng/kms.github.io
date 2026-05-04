@@ -24,7 +24,7 @@ async function startServer() {
 }
 
 //inventory routes
-app.get('/api/inventory ', async (req, res) => {
+app.get('/api/inventory', async (req, res) => {
     try {
         const collection = db.collection('items');
         const data = await collection.find({}).toArray();
