@@ -1,4 +1,4 @@
-const { MongoClient } = require('mongodb');
+import { MongoClient } from 'mongodb';
 
 export default async function handler(req, res) {
     const client = new MongoClient(process.env.MONGODB_URI);
@@ -16,7 +16,7 @@ export default async function handler(req, res) {
         if (req.method === 'POST') {
             const newItem = req.body; 
             const result = await items.insertOne(newItem);
-            return res.status(201).json(result);
+            return res.status(201).json({ ...newItem, _id: result.insertedId });
         }
     } catch (error) {
         res.status(500).json({ error: error.message });
